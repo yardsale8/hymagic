@@ -8,25 +8,13 @@ in a ipython console, qtconsole, or notebook.
 
 ### Installation
 
-First, make sure that `hymagic.py` is in your python path, the suggested
-location for ipython extensions is
+You can install the hymagic package using
 
-In[6]:
-
-```
-from __future__ import print_function
-import os
-ip = get_ipython()
-print(os.path.join(ip.ipython_dir, 'extensions'))
-```
-
-
-    /home/tiverson/.config/ipython/extensions
-
+    $ pip install hymagic
 
 ### Loading the `hymagic` extension
 
-In[7]:
+In[1]:
 
 ```
 %load_ext hymagic
@@ -36,7 +24,7 @@ In[7]:
 
 You can execute a hylang cell using the `%%hylang magic` as shown below.
 
-In[8]:
+In[2]:
 
 ```
 %%hylang
@@ -62,7 +50,7 @@ In[8]:
 Since hylang code is executed as python AST nodes in the regular ipython kernel,
 you can freely intersperse hylang code and python code.
 
-In[9]:
+In[3]:
 
 ```
 #Here we call the add1 function defined above in 
@@ -82,11 +70,11 @@ for i in range(4):
 
 You can also use the `%hylang` magic to execute one line of code
 
-In[11]:
+In[4]:
 
 ```
 a = 5
-%hylang (def a (add1 a)) 
+%hylang (setv a (add1 a)) 
 a = a + 1
 print(a)
 ```
@@ -95,8 +83,7 @@ print(a)
     7
 
 
-In[ ]:
+### TODO
 
-```
-
-```
+* Setup testing
+* See if it is possible to hijack IPython's completion
