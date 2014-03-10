@@ -1,34 +1,35 @@
-# Copyright (c) 2013 Paul Tagliamonte <paultag@debian.org>
-# Copyright (c) 2013 Gergely Nagy <algernon@madhouse-project.org>
-# Copyright (c) 2013 James King <james@agentultra.com>
-# Copyright (c) 2013 Julien Danjou <julien@danjou.info>
-# Copyright (c) 2013 Konrad Hinsen <konrad.hinsen@fastmail.net>
-# Copyright (c) 2013 Thom Neale <twneale@gmail.com>
-# Copyright (c) 2013 Will Kahn-Greene <willg@bluesock.org>
-# Copyright (c) 2013 Bob Tolbert <bob@tolbert.org>
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
-# hymagic is an adaptation of the HyRepl to allow ipython iteration
-# hymagic author - Todd Iverson
-# Available as github.com/yardsale8/hymagic
+"""
+ Copyright (c) 2013 Paul Tagliamonte <paultag@debian.org>
+ Copyright (c) 2013 Gergely Nagy <algernon@madhouse-project.org>
+ Copyright (c) 2013 James King <james@agentultra.com>
+ Copyright (c) 2013 Julien Danjou <julien@danjou.info>
+ Copyright (c) 2013 Konrad Hinsen <konrad.hinsen@fastmail.net>
+ Copyright (c) 2013 Thom Neale <twneale@gmail.com>
+ Copyright (c) 2013 Will Kahn-Greene <willg@bluesock.org>
+ Copyright (c) 2013 Bob Tolbert <bob@tolbert.org>
 
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+
+ hymagic is an adaptation of the HyRepl to allow ipython iteration
+ hymagic author - Todd Iverson
+ Available as github.com/yardsale8/hymagic
+"""
 import argparse
 import code
 import ast
@@ -97,6 +98,11 @@ class HylangMagics(Magics):
                 self.shell.showtraceback()
         except Exception:
             self.shell.showtraceback()
+    def hy(self, line, cell=None, filename='<input>', symbol='single'):
+        ''' An short alias for the hylang magic
+           Use %hy for a line of hylang code and %%hy for a block of code
+        '''
+        self.hylang(line, cell=None, filename='<input>', symbol='single')
 def load_ipython_extension(ip):
     """Load the extension in IPython."""
     ip.register_magics(HylangMagics)
