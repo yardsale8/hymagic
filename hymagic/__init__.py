@@ -34,6 +34,7 @@ import argparse
 import code
 import ast
 import sys
+import re
 
 import hy
 
@@ -103,6 +104,31 @@ class HylangMagics(Magics):
            Use %hy for a line of hylang code and %%hy for a block of code
         '''
         self.hylang(line, cell=None, filename='<input>', symbol='single')
+
+#A regular expression for things that are clearly not hylang but python
+notSexp = re.compile(r"""(?<! \( ) \s* ,  #Any comma not proceeded by paren
+                         | : #no colons in hylang
+                         | ^\s*[^[{(].*   #line doesnt start with delimiters
+                         | .*[^]})]\s*$   #line doesn't end with delimiters
+                         | (?<!\()\s* for #for preceeded by (
+                         | (?<!\()\s*=   #equals not proceeded by ("""
+                     , re.VERBOSE)
+
+pcode = '''def adder(L):
+    """a function to add lists"""
+    tot = 0
+    for val in L:
+        tot += val
+    return val
+    a = [1, 2, 3]
+    b = adder(L)
+    c = [str(val) for val in a]
+'''
+
+def test_notSexp():
+    '''test the notSexp on some python code'''
+    assert all([bool(re.search(notSexp,l)) for l in pcode])
+#TODO: Look at coroutine transformers for hacking ipython
 def load_ipython_extension(ip):
     """Load the extension in IPython."""
     ip.register_magics(HylangMagics)
