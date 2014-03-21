@@ -103,7 +103,7 @@ class HylangMagics(Magics):
         ''' An short alias for the hylang magic
            Use %hy for a line of hylang code and %%hy for a block of code
         '''
-        self.hylang(line, cell=None, filename='<input>', symbol='single')
+        self.hylang(line, cell, filename, symbol)
 
 #A regular expression for things that are clearly not hylang but python
 notSexp = re.compile(r"""(?<! \( ) \s* ,  #Any comma not proceeded by paren
@@ -129,6 +129,62 @@ def test_notSexp():
     '''test the notSexp on some python code'''
     assert all([bool(re.search(notSexp,l)) for l in pcode])
 #TODO: Look at coroutine transformers for hacking ipython
+
+
+from IPython.core.inputtransformer import CoroutineInputTransformer
+
+def count_delimiter(s, opener):
+    ''' Keep net count of the opening delimiters in s'''
+    closer_dict = {'(':')','[':']','{':'}'}
+    closer = closer_dict[opener]
+    cnt = 0
+    for char in s:
+        if char == opener:
+            cnt += 1
+        elif char == closer:
+            cnt -= 1
+    return cnt
+
+
+@CoroutineInputTransformer.wrap
+def hy_transform_coroutine():
+    '''Watch the input and transform if it is hylang.
+    There are four cases:
+        1) line == None -- continue
+        2) line matches the notSexp regex -- clearly python
+        3) line is possible Sexp with \\n -- gather lines until Sexp is closed
+        4) one line Sexp
+        NOTE: Python expression wrapped in () will throw an exception
+    '''
+    line = ''
+    while True:
+        line = (yield line)
+        if line == None:
+            continue
+        elif re.search(notSexp, line.encode('unicode_escape')):
+            line = (yield line) # not hylang so give line back
+        elif '\n' in line:
+            # We are starting a block, count delimiters to find last line
+            sexp = line
+            opener = sexp.lstrip()[0]
+            cnt = count_delimiter(sexp, opener)
+            while cnt > 0:
+                # gathering the sexp
+                line = None
+                line = (yield line)
+                cnt += count_delimiter(line, opener)
+                sexp += line
+            line = "get_ipython().magic(u'hylang " + sexp.replace('\n','') +"')"
+            continue
+        else:
+            # one line hylang command
+            # FIXME: python expressions in () will throw an exception!
+            line = "get_ipython().magic(u'hylang " + line +"')"
+            line = (yield line)
+
+
 def load_ipython_extension(ip):
     """Load the extension in IPython."""
+    ip.input_splitter.python_line_transforms.append(hy_transform_coroutine())
+    ip.input_transformer_manager.python_line_transforms.append(hy_transform_coroutine())
     ip.register_magics(HylangMagics)
